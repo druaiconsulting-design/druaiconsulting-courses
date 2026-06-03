@@ -49,8 +49,8 @@ function ProgressRing({ percent }: { percent: number }) {
   );
 }
 
-export default function CourseDashboard() {
-  const { user, logout } = useAuth();
+export default function CourseDashboard({ adminPreview = false }: { adminPreview?: boolean }) {
+  const { user, logout, isAdmin } = useAuth();
   const [enrollment, setEnrollment]   = useState<Enrollment | null | "loading">("loading");
   const [modules, setModules]         = useState<Module[]>([]);
   const [lessons, setLessons]         = useState<Lesson[]>([]);
@@ -59,9 +59,10 @@ export default function CourseDashboard() {
   const [completing, setCompleting]   = useState(false);
   const [railOpen, setRailOpen]       = useState(true);
 
-  // Fetch enrollment
+  // Fetch enrollment — admin always has full access
   useEffect(() => {
     if (!user) return;
+    if (isAdmin) { setEnrollment({ tier: "mastermind" }); return; }
     supabase.from("course_enrollments")
       .select("tier")
       .eq("user_id", user.id)
@@ -69,7 +70,7 @@ export default function CourseDashboard() {
       .eq("payment_status", "active")
       .single()
       .then(({ data }) => setEnrollment(data ? { tier: data.tier } : null));
-  }, [user?.id]);
+  }, [user?.id, isAdmin]);
 
   // Fetch course content
   useEffect(() => {
@@ -186,6 +187,9 @@ export default function CourseDashboard() {
           <span style={{ fontFamily: "'Montserrat', sans-serif", color: "rgba(255,255,255,0.5)", fontSize: "0.72rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>From Confusion to Confident with AI™</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+          {isAdmin && (
+            <a href="/admin" style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.65rem", fontWeight: 700, color: "#D4AF37", textDecoration: "none", padding: "0.3rem 0.75rem", borderRadius: 4, border: "1px solid rgba(212,175,55,0.35)" }}>⚙ Admin</a>
+          )}
           <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.62rem", fontWeight: 700, padding: "3px 10px", borderRadius: 20, background: `${TIER_COLORS[tier] || "#D4AF37"}18`, border: `1px solid ${TIER_COLORS[tier] || "#D4AF37"}50`, color: TIER_COLORS[tier] || "#D4AF37" }}>{TIER_LABELS[tier] || tier}</span>
           <span style={{ fontFamily: "'Inter', sans-serif", color: "rgba(230,230,230,0.5)", fontSize: "0.72rem" }}>{user?.firstName}</span>
           <button onClick={logout} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.65rem", color: "rgba(255,255,255,0.4)", background: "none", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, padding: "0.3rem 0.7rem", cursor: "pointer" }}>Sign Out</button>
