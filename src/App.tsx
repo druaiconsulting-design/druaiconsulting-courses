@@ -32,13 +32,6 @@ function Router() {
     return <AdminCourses />;
   }
 
-  // Admin student preview — bypasses enrollment check and admin redirect
-  if (path === "/preview" || path === "/preview/") {
-    setTitle("Student Preview · DRU AI Consulting");
-    if (!isLoggedIn || !isAdmin) return <CourseLogin />;
-    return <CourseDashboard adminPreview />;
-  }
-
   // Login page
   if (path === "/login" || path === "/login/") {
     setTitle("Sign In · DRU AI Consulting Courses");
@@ -46,11 +39,10 @@ function Router() {
     return <CourseLogin />;
   }
 
-  // Main course dashboard — admin redirects to management
+  // Course dashboard — admin can view without redirect (same as Client View in main app)
   if (path === "/courses" || path === "/courses/" || path === "/" || path === "") {
     setTitle("From Confusion to Confident with AI™ · DRU AI Consulting");
     if (!isLoggedIn) return <CourseLogin />;
-    if (isAdmin) { window.location.replace("/admin"); return null; }
     return <CourseDashboard />;
   }
 
