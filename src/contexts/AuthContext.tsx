@@ -31,7 +31,8 @@ const AuthContext = createContext<AuthContextType>({
 function toAuthUser(supabaseUser: User): AuthUser {
   const meta = supabaseUser.user_metadata || {};
   const fullName = meta.full_name || meta.name || "";
-  const firstName = meta.given_name || fullName.split(" ")[0] || supabaseUser.email?.split("@")[0] || "User";
+  const raw = meta.given_name || fullName.split(" ")[0] || supabaseUser.email?.split("@")[0] || "User";
+  const firstName = raw.charAt(0).toUpperCase() + raw.slice(1);
   return {
     id: supabaseUser.id,
     email: supabaseUser.email || "",
@@ -52,12 +53,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
-      setUser(session?.user ? toAuthUser(session.user) : null);
+      if (session?.user) {
+        const authUser = toAuthUser(session.user);
+        setUser(authUser);
+        // Fetch from profiles table for correctly cased name
+        supabase.from("profiles").select("first_name, last_name").eq("id", session.user.id).single()
+          .then(({ data }) => {
+            if (data?.first_name) {
+              setUser(prev => prev ? {
+                ...prev,
+                firstName: data.first_name!,
+                fullName: [data.first_name, data.last_name].filter(Boolean).join(" ") || prev.fullName,
+              } : prev);
+            }
+          });
+      }
       setLoading(false);
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
-      setUser(session?.user ? toAuthUser(session.user) : null);
+      if (session?.user) {
+        const authUser = toAuthUser(session.user);
+        setUser(authUser);
+        // Fetch from profiles table for correctly cased name
+        supabase.from("profiles").select("first_name, last_name").eq("id", session.user.id).single()
+          .then(({ data }) => {
+            if (data?.first_name) {
+              setUser(prev => prev ? {
+                ...prev,
+                firstName: data.first_name!,
+                fullName: [data.first_name, data.last_name].filter(Boolean).join(" ") || prev.fullName,
+              } : prev);
+            }
+          });
+      } else {
+        setUser(null);
+      }
       setLoading(false);
     });
     return () => subscription.unsubscribe();
