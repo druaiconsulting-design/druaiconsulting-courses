@@ -17,7 +17,7 @@ function Router() {
       <div style={{ minHeight: "100dvh", background: "#0A2342", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <img
           src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663512997684/PPrwKSVlySJjkhTX.png"
-          alt="DRU CLEAR™"
+          alt="DRU AI Consulting"
           style={{ height: 56, width: "auto", opacity: 0.9 }}
         />
       </div>
@@ -28,40 +28,35 @@ function Router() {
   if (path === "/admin/courses" || path === "/admin/courses/") {
     setTitle("Course Management · DRU AI Consulting");
     if (!isLoggedIn) return <CourseLogin />;
-    if (!isAdmin) {
-      window.location.replace("/courses");
-      return null;
-    }
+    if (!isAdmin) { window.location.replace("/courses"); return null; }
     return <AdminCourses />;
+  }
+
+  // Admin student preview — bypasses enrollment check and admin redirect
+  if (path === "/preview" || path === "/preview/") {
+    setTitle("Student Preview · DRU AI Consulting");
+    if (!isLoggedIn || !isAdmin) return <CourseLogin />;
+    return <CourseDashboard adminPreview />;
   }
 
   // Login page
   if (path === "/login" || path === "/login/") {
     setTitle("Sign In · DRU AI Consulting Courses");
-    if (isLoggedIn) {
-      window.location.replace(isAdmin ? "/admin/courses" : "/courses");
-      return null;
-    }
+    if (isLoggedIn) { window.location.replace(isAdmin ? "/admin/courses" : "/courses"); return null; }
     return <CourseLogin />;
   }
 
-  // Main course dashboard — admin gets redirected to management
+  // Main course dashboard — admin redirects to management
   if (path === "/courses" || path === "/courses/" || path === "/" || path === "") {
     setTitle("From Confusion to Confident with AI™ · DRU AI Consulting");
     if (!isLoggedIn) return <CourseLogin />;
-    if (isAdmin) {
-      window.location.replace("/admin/courses");
-      return null;
-    }
+    if (isAdmin) { window.location.replace("/admin/courses"); return null; }
     return <CourseDashboard />;
   }
 
   // Fallback
   setTitle("From Confusion to Confident with AI™");
-  if (isLoggedIn) {
-    window.location.replace(isAdmin ? "/admin/courses" : "/courses");
-    return null;
-  }
+  if (isLoggedIn) { window.location.replace(isAdmin ? "/admin/courses" : "/courses"); return null; }
   return <CourseLogin />;
 }
 
