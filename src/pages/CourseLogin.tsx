@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
 
-export default function CourseLogin() {
+export default function CourseLogin({ adminMode = false }: { adminMode?: boolean }) {
   const { login, loginWithGoogle } = useAuth();
-  const [showLogin, setShowLogin]   = useState(false);
+  const [showLogin, setShowLogin]   = useState(adminMode);
   const [email, setEmail]           = useState("");
   const [password, setPassword]     = useState("");
   const [error, setError]           = useState("");
@@ -14,7 +14,7 @@ export default function CourseLogin() {
     const result = await login(email, password);
     setLoading(false);
     if (!result.success) setError(result.error || "Login failed.");
-    else window.location.href = "/courses";
+    else window.location.href = adminMode ? "/admin" : "/courses";
   };
 
   const handleGoogle = async () => {
@@ -111,8 +111,10 @@ export default function CourseLogin() {
           <div style={{ background: "rgba(212,175,55,0.05)", border: "1px solid rgba(212,175,55,0.2)", borderRadius: 12, padding: "1.75rem" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.5rem" }}>
               <h2 style={{ fontFamily: "'Playfair Display', serif", color: "#FFFFFF", fontSize: "1.1rem", fontWeight: 700, margin: 0 }}>Sign In</h2>
-              <button onClick={() => { setShowLogin(false); setError(""); }}
-                style={{ background: "none", border: "none", color: "rgba(255,255,255,0.35)", cursor: "pointer", fontSize: "0.8rem", fontFamily: "'Montserrat', sans-serif" }}>← Back</button>
+              {!adminMode && (
+                <button onClick={() => { setShowLogin(false); setError(""); }}
+                  style={{ background: "none", border: "none", color: "rgba(255,255,255,0.35)", cursor: "pointer", fontSize: "0.8rem", fontFamily: "'Montserrat', sans-serif" }}>← Back</button>
+              )}
             </div>
 
             {/* Google */}
