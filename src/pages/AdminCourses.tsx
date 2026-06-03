@@ -84,7 +84,7 @@ export default function AdminCourses() {
           <span style={{ fontFamily: "'Montserrat', sans-serif", color: "#D4AF37", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>Course Management</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <a href="/preview" style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.68rem", color: "rgba(212,175,55,0.7)", textDecoration: "none" }}>← Student View</a>
+          <a href="/courses" style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.68rem", color: "rgba(212,175,55,0.7)", textDecoration: "none" }}>👤 Student View</a>
           <span style={{ fontFamily: "'Inter', sans-serif", color: "rgba(230,230,230,0.4)", fontSize: "0.72rem" }}>{user?.email}</span>
           <button onClick={logout} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.65rem", color: "rgba(255,255,255,0.4)", background: "none", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, padding: "0.3rem 0.7rem", cursor: "pointer" }}>Sign Out</button>
         </div>
