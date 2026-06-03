@@ -27,7 +27,7 @@ function Router() {
   // Admin course management
   if (path === "/admin" || path === "/admin/") {
     setTitle("Course Management · DRU AI Consulting");
-    if (!isLoggedIn) return <CourseLogin />;
+    if (!isLoggedIn) return <CourseLogin adminMode />;
     if (!isAdmin) { window.location.replace("/courses"); return null; }
     return <AdminCourses />;
   }
