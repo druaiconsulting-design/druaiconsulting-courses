@@ -1,5 +1,6 @@
 // From Confusion to Confident with AI™ — Student Dashboard
 // Option A: Left Rail + Right Panel with Bunny Stream video player
+// Theme: Warm white #FAFAF8 · Navy text · Gold accents · Blue nav bar
 
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../contexts/AuthContext";
@@ -10,24 +11,20 @@ const BUNNY_LIBRARY_ID = import.meta.env.VITE_BUNNY_LIBRARY_ID || "";
 const PAYMENT_LINKS = {
   self_paced: "https://link.druaiconsulting.com/payment-link/69f55d0cb615f70a8a33b5fd",
   live_cohort: "https://link.druaiconsulting.com/payment-link/69f55e7bb18c99dd72d3c0e5",
-  mastermind: "https://link.druaiconsulting.com/payment-link/69f55bf3b615f70a8a33b5fb",
+  mastermind:  "https://link.druaiconsulting.com/payment-link/69f55bf3b615f70a8a33b5fb",
 };
 
 const TIER_LABELS: Record<string, string> = {
-  self_paced: "Self-Paced",
-  live_cohort: "Live Cohort",
-  mastermind: "Cohort Mastermind",
+  self_paced: "Self-Paced", live_cohort: "Live Cohort", mastermind: "Cohort Mastermind",
 };
 
 const TIER_COLORS: Record<string, string> = {
-  self_paced: "#D4AF37",
-  live_cohort: "#C2185B",
-  mastermind: "#43A047",
+  self_paced: "#D4AF37", live_cohort: "#C2185B", mastermind: "#43A047",
 };
 
-interface Module { id: string; module_number: number; title: string; description: string | null; }
-interface Lesson  { id: string; module_id: string; lesson_number: number; title: string; description: string | null; bunny_video_id: string | null; duration_minutes: number | null; resources: {title:string;url:string}[] | null; agent_insight: string | null; agent_name: string | null; is_active: boolean; }
-interface Progress { lesson_id: string; completed: boolean; }
+interface Module    { id: string; module_number: number; title: string; description: string | null; }
+interface Lesson    { id: string; module_id: string; lesson_number: number; title: string; description: string | null; bunny_video_id: string | null; duration_minutes: number | null; resources: {title:string;url:string}[] | null; agent_insight: string | null; agent_name: string | null; is_active: boolean; }
+interface Progress  { lesson_id: string; completed: boolean; }
 interface Enrollment { tier: string; }
 
 function ProgressRing({ percent }: { percent: number }) {
@@ -36,14 +33,14 @@ function ProgressRing({ percent }: { percent: number }) {
   return (
     <div style={{ position: "relative", width: 88, height: 88, flexShrink: 0 }}>
       <svg width="88" height="88" style={{ transform: "rotate(-90deg)" }}>
-        <circle cx="44" cy="44" r={r} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="6" />
+        <circle cx="44" cy="44" r={r} fill="none" stroke="rgba(10,35,66,0.1)" strokeWidth="6" />
         <circle cx="44" cy="44" r={r} fill="none" stroke="#D4AF37" strokeWidth="6"
           strokeDasharray={circ} strokeDashoffset={offset}
           strokeLinecap="round" style={{ transition: "stroke-dashoffset 0.6s ease" }} />
       </svg>
       <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
         <span style={{ fontFamily: "'Playfair Display', serif", color: "#D4AF37", fontSize: "1.1rem", fontWeight: 700, lineHeight: 1 }}>{percent}%</span>
-        <span style={{ fontFamily: "'Montserrat', sans-serif", color: "rgba(230,230,230,0.5)", fontSize: "0.48rem", letterSpacing: "0.08em", marginTop: 2 }}>DONE</span>
+        <span style={{ fontFamily: "'Montserrat', sans-serif", color: "rgba(10,35,66,0.4)", fontSize: "0.48rem", letterSpacing: "0.08em", marginTop: 2 }}>DONE</span>
       </div>
     </div>
   );
@@ -51,18 +48,18 @@ function ProgressRing({ percent }: { percent: number }) {
 
 export default function CourseDashboard({ adminPreview = false }: { adminPreview?: boolean }) {
   const { user, logout, isAdmin } = useAuth();
-  const [enrollment, setEnrollment]   = useState<Enrollment | null | "loading">("loading");
-  const [modules, setModules]         = useState<Module[]>([]);
-  const [lessons, setLessons]         = useState<Lesson[]>([]);
-  const [progress, setProgress]       = useState<Progress[]>([]);
+  const [enrollment, setEnrollment]     = useState<Enrollment | null | "loading">("loading");
+  const [modules, setModules]           = useState<Module[]>([]);
+  const [lessons, setLessons]           = useState<Lesson[]>([]);
+  const [progress, setProgress]         = useState<Progress[]>([]);
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
-  const [completing, setCompleting]   = useState(false);
-  const [railOpen, setRailOpen]       = useState(true);
+  const [completing, setCompleting]     = useState(false);
+  const [railOpen, setRailOpen]         = useState(true);
 
   // Fetch enrollment — admin always has full access
   useEffect(() => {
     if (!user) return;
-    if (isAdmin) { setEnrollment({ tier: "mastermind" }); return; }
+    if (adminPreview || isAdmin) { setEnrollment({ tier: "mastermind" }); return; }
     supabase.from("course_enrollments")
       .select("tier")
       .eq("user_id", user.id)
@@ -70,25 +67,18 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
       .eq("payment_status", "active")
       .single()
       .then(({ data }) => setEnrollment(data ? { tier: data.tier } : null));
-  }, [user?.id, isAdmin]);
+  }, [user?.id, isAdmin, adminPreview]);
 
   // Fetch course content
   useEffect(() => {
     supabase.from("course_modules")
-      .select("*")
-      .eq("course_id", "confusion_to_confident")
-      .eq("is_active", true)
-      .order("module_number")
+      .select("*").eq("course_id", "confusion_to_confident").eq("is_active", true).order("module_number")
       .then(({ data }) => setModules((data as Module[]) || []));
-
     supabase.from("course_lessons")
-      .select("*")
-      .eq("is_active", true)
-      .order("lesson_number")
+      .select("*").eq("is_active", true).order("lesson_number")
       .then(({ data }) => {
         const all = (data as Lesson[]) || [];
         setLessons(all);
-        // Auto-select first incomplete or first lesson
         if (all.length > 0) setActiveLesson(all[0]);
       });
   }, []);
@@ -96,19 +86,15 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
   // Fetch user progress
   useEffect(() => {
     if (!user) return;
-    supabase.from("course_progress")
-      .select("lesson_id, completed")
-      .eq("user_id", user.id)
+    supabase.from("course_progress").select("lesson_id, completed").eq("user_id", user.id)
       .then(({ data }) => setProgress((data as Progress[]) || []));
   }, [user?.id]);
 
-  const completedIds = useMemo(() => new Set(progress.filter(p => p.completed).map(p => p.lesson_id)), [progress]);
+  const completedIds    = useMemo(() => new Set(progress.filter(p => p.completed).map(p => p.lesson_id)), [progress]);
+  const totalLessons    = lessons.length;
+  const completedCount  = completedIds.size;
+  const progressPercent = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
 
-  const totalLessons     = lessons.length;
-  const completedCount   = completedIds.size;
-  const progressPercent  = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
-
-  // Determine which lessons are unlocked: sequential — complete previous to unlock next
   const unlockedIds = useMemo(() => {
     const unlocked = new Set<string>();
     for (let i = 0; i < lessons.length; i++) {
@@ -126,34 +112,31 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
       user_id: user.id, lesson_id: activeLesson.id,
       completed: true, completed_at: new Date().toISOString(),
     }, { onConflict: "user_id,lesson_id" });
-    setProgress(prev => {
-      const filtered = prev.filter(p => p.lesson_id !== activeLesson.id);
-      return [...filtered, { lesson_id: activeLesson.id, completed: true }];
-    });
-    // Auto-advance to next lesson
+    setProgress(prev => [...prev.filter(p => p.lesson_id !== activeLesson.id), { lesson_id: activeLesson.id, completed: true }]);
     const idx = lessons.findIndex(l => l.id === activeLesson.id);
     if (idx >= 0 && idx < lessons.length - 1) setActiveLesson(lessons[idx + 1]);
     setCompleting(false);
   };
 
-  // ── Not enrolled ─────────────────────────────────────────────────────────────
+  // ── Loading ───────────────────────────────────────────────────────────────────
   if (enrollment === "loading") {
     return (
-      <div style={{ minHeight: "100dvh", background: "#0A2342", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <p style={{ fontFamily: "'Montserrat', sans-serif", color: "rgba(212,175,55,0.6)", fontSize: "0.75rem", letterSpacing: "0.1em" }}>LOADING...</p>
+      <div style={{ minHeight: "100dvh", background: "#FAFAF8", display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <p style={{ fontFamily: "'Montserrat', sans-serif", color: "rgba(10,35,66,0.4)", fontSize: "0.75rem", letterSpacing: "0.1em" }}>LOADING...</p>
       </div>
     );
   }
 
+  // ── Not enrolled ─────────────────────────────────────────────────────────────
   if (enrollment === null) {
     return (
-      <div style={{ minHeight: "100dvh", background: "#071a30", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2rem 1.5rem" }}>
-        <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663512997684/PPrwKSVlySJjkhTX.png" alt="DRU CLEAR™" style={{ height: 90, marginBottom: "2rem" }} />
+      <div style={{ minHeight: "100dvh", background: "#FAFAF8", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2rem 1.5rem" }}>
+        <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663512997684/PPrwKSVlySJjkhTX.png" alt="DRU AI Consulting" style={{ height: 90, marginBottom: "2rem" }} />
         <div style={{ maxWidth: 480, textAlign: "center" }}>
           <p style={{ fontFamily: "'Montserrat', sans-serif", color: "#D4AF37", fontSize: "0.65rem", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "0.75rem" }}>Access Required</p>
-          <h1 style={{ fontFamily: "'Cinzel', serif", color: "#FFFFFF", fontSize: "1.4rem", fontWeight: 700, lineHeight: 1.4, marginBottom: "0.75rem" }}>From Confusion to Confident<br />with AI™</h1>
-          <p style={{ fontFamily: "'Inter', sans-serif", color: "rgba(230,230,230,0.55)", fontSize: "0.8rem", lineHeight: 1.7, marginBottom: "2rem" }}>
-            You're logged in as <strong style={{ color: "#D4AF37" }}>{user?.email}</strong> but don't have an active enrollment. Choose your tier below to get started.
+          <h1 style={{ fontFamily: "'Cinzel', serif", color: "#0A2342", fontSize: "1.4rem", fontWeight: 700, lineHeight: 1.4, marginBottom: "0.75rem" }}>From Confusion to Confident<br />with AI™</h1>
+          <p style={{ fontFamily: "'Inter', sans-serif", color: "rgba(10,35,66,0.55)", fontSize: "0.8rem", lineHeight: 1.7, marginBottom: "2rem" }}>
+            You're signed in as <strong style={{ color: "#D4AF37" }}>{user?.email}</strong> but don't have an active enrollment. Choose your tier below to get started.
           </p>
           <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "1.5rem" }}>
             {[
@@ -163,12 +146,12 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
             ].map(t => (
               <a key={t.key} href={PAYMENT_LINKS[t.key as keyof typeof PAYMENT_LINKS]} target="_blank" rel="noopener noreferrer"
                 style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem 1.5rem", borderRadius: 10, border: `1px solid ${t.color}40`, background: `${t.color}0A`, textDecoration: "none" }}>
-                <span style={{ fontFamily: "'Montserrat', sans-serif", color: "#FFFFFF", fontWeight: 700, fontSize: "0.85rem" }}>{t.label}</span>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: "#0A2342", fontWeight: 700, fontSize: "0.85rem" }}>{t.label}</span>
                 <span style={{ fontFamily: "'Playfair Display', serif", color: t.color, fontWeight: 700, fontSize: "1rem" }}>{t.price}</span>
               </a>
             ))}
           </div>
-          <button onClick={logout} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.68rem", color: "rgba(255,255,255,0.35)", background: "none", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 6, padding: "0.5rem 1rem", cursor: "pointer" }}>Sign Out</button>
+          <button onClick={logout} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.68rem", color: "rgba(10,35,66,0.4)", background: "none", border: "1px solid rgba(10,35,66,0.15)", borderRadius: 6, padding: "0.5rem 1rem", cursor: "pointer" }}>Sign Out</button>
         </div>
       </div>
     );
@@ -178,30 +161,30 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
 
   // ── Full Dashboard ────────────────────────────────────────────────────────────
   return (
-    <div style={{ minHeight: "100dvh", background: "#0A2342", display: "flex", flexDirection: "column" }}>
+    <div style={{ minHeight: "100dvh", background: "#FAFAF8", display: "flex", flexDirection: "column" }}>
 
-      {/* Top NavBar */}
+      {/* Top NavBar — stays blue */}
       <nav style={{ background: "#163D6E", borderBottom: "1px solid rgba(212,175,55,0.2)", padding: "0 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64, flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663512997684/PPrwKSVlySJjkhTX.png" alt="DRU CLEAR™" style={{ height: 52, width: "auto" }} />
+          <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663512997684/PPrwKSVlySJjkhTX.png" alt="DRU AI Consulting" style={{ height: 52, width: "auto" }} />
           <span style={{ fontFamily: "'Montserrat', sans-serif", color: "rgba(255,255,255,0.5)", fontSize: "0.72rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>From Confusion to Confident with AI™</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           {isAdmin && (
             <a href="/admin" style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.65rem", fontWeight: 700, color: "#D4AF37", textDecoration: "none", padding: "0.3rem 0.75rem", borderRadius: 4, border: "1px solid rgba(212,175,55,0.35)" }}>⚙ Admin</a>
           )}
-          <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.62rem", fontWeight: 700, padding: "3px 10px", borderRadius: 20, background: `${TIER_COLORS[tier] || "#D4AF37"}18`, border: `1px solid ${TIER_COLORS[tier] || "#D4AF37"}50`, color: TIER_COLORS[tier] || "#D4AF37" }}>{TIER_LABELS[tier] || tier}</span>
-          <span style={{ fontFamily: "'Inter', sans-serif", color: "rgba(230,230,230,0.5)", fontSize: "0.72rem" }}>{user?.firstName}</span>
-          <button onClick={logout} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.65rem", color: "rgba(255,255,255,0.4)", background: "none", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 4, padding: "0.3rem 0.7rem", cursor: "pointer" }}>Sign Out</button>
+          <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.62rem", fontWeight: 700, padding: "3px 10px", borderRadius: 20, background: `${TIER_COLORS[tier] || "#D4AF37"}25`, border: `1px solid ${TIER_COLORS[tier] || "#D4AF37"}60`, color: TIER_COLORS[tier] || "#D4AF37" }}>{TIER_LABELS[tier] || tier}</span>
+          <span style={{ fontFamily: "'Inter', sans-serif", color: "rgba(255,255,255,0.55)", fontSize: "0.72rem" }}>{user?.firstName}</span>
+          <button onClick={logout} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.65rem", color: "rgba(255,255,255,0.4)", background: "none", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 4, padding: "0.3rem 0.7rem", cursor: "pointer" }}>Sign Out</button>
         </div>
       </nav>
 
       {/* Welcome bar */}
-      <div style={{ background: "rgba(212,175,55,0.05)", borderBottom: "1px solid rgba(212,175,55,0.15)", padding: "1rem 1.5rem", display: "flex", alignItems: "center", gap: "1.5rem", flexShrink: 0 }}>
+      <div style={{ background: "#FFFFFF", borderBottom: "1px solid rgba(10,35,66,0.08)", padding: "1rem 1.5rem", display: "flex", alignItems: "center", gap: "1.5rem", flexShrink: 0 }}>
         <ProgressRing percent={progressPercent} />
         <div>
-          <h2 style={{ fontFamily: "'Playfair Display', serif", color: "#FFFFFF", fontSize: "1.15rem", fontWeight: 700, marginBottom: "0.2rem" }}>Welcome back, {user?.firstName}</h2>
-          <p style={{ fontFamily: "'Inter', sans-serif", color: "rgba(230,230,230,0.5)", fontSize: "0.75rem" }}>
+          <h2 style={{ fontFamily: "'Playfair Display', serif", color: "#0A2342", fontSize: "1.15rem", fontWeight: 700, marginBottom: "0.2rem" }}>Welcome back, {user?.firstName}</h2>
+          <p style={{ fontFamily: "'Inter', sans-serif", color: "rgba(10,35,66,0.5)", fontSize: "0.75rem" }}>
             {completedCount} of {totalLessons} lessons complete
             {completedCount === totalLessons && totalLessons > 0 && <span style={{ color: "#43A047", marginLeft: "0.5rem" }}>· 🎉 Course Complete!</span>}
           </p>
@@ -212,44 +195,41 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
       <div style={{ flex: 1, display: "flex", overflow: "hidden" }}>
 
         {/* ── LEFT RAIL ── */}
-        <div style={{ width: railOpen ? 280 : 48, background: "#071A2E", borderRight: "1px solid rgba(212,175,55,0.15)", transition: "width 0.25s ease", flexShrink: 0, overflowY: railOpen ? "auto" : "hidden", display: "flex", flexDirection: "column" }}>
-          {/* Toggle */}
+        <div style={{ width: railOpen ? 280 : 48, background: "rgba(10,35,66,0.04)", borderRight: "1px solid rgba(10,35,66,0.1)", transition: "width 0.25s ease", flexShrink: 0, overflowY: railOpen ? "auto" : "hidden", display: "flex", flexDirection: "column" }}>
           <button onClick={() => setRailOpen(!railOpen)}
-            style={{ padding: "0.75rem", background: "none", border: "none", color: "rgba(212,175,55,0.6)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: railOpen ? "flex-end" : "center", borderBottom: "1px solid rgba(212,175,55,0.1)", flexShrink: 0 }}>
+            style={{ padding: "0.75rem", background: "none", border: "none", color: "rgba(10,35,66,0.4)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: railOpen ? "flex-end" : "center", borderBottom: "1px solid rgba(10,35,66,0.08)", flexShrink: 0 }}>
             <span style={{ fontSize: "0.8rem" }}>{railOpen ? "◀" : "▶"}</span>
           </button>
 
           {railOpen && (
             <div style={{ padding: "0.75rem 0.5rem" }}>
               {modules.map(mod => {
-                const modLessons = lessons.filter(l => l.module_id === mod.id);
+                const modLessons  = lessons.filter(l => l.module_id === mod.id);
                 const modCompleted = modLessons.filter(l => completedIds.has(l.id)).length;
-                const allDone = modLessons.length > 0 && modCompleted === modLessons.length;
+                const allDone     = modLessons.length > 0 && modCompleted === modLessons.length;
                 return (
                   <div key={mod.id} style={{ marginBottom: "0.5rem" }}>
-                    {/* Module header */}
                     <div style={{ padding: "0.5rem 0.75rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
                       <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.6rem", fontWeight: 700, color: allDone ? "#43A047" : "#D4AF37", letterSpacing: "0.08em", textTransform: "uppercase" as const }}>
                         {allDone ? "✓" : `${modCompleted}/${modLessons.length}`}
                       </span>
-                      <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.68rem", fontWeight: 700, color: "#FFFFFF", letterSpacing: "0.06em", textTransform: "uppercase" as const }}>
+                      <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.68rem", fontWeight: 700, color: "#0A2342", letterSpacing: "0.06em", textTransform: "uppercase" as const }}>
                         Module {mod.module_number}: {mod.title}
                       </span>
                     </div>
-                    {/* Lessons */}
                     {modLessons.map(lesson => {
-                      const done      = completedIds.has(lesson.id);
-                      const unlocked  = unlockedIds.has(lesson.id);
-                      const isActive  = activeLesson?.id === lesson.id;
+                      const done     = completedIds.has(lesson.id);
+                      const unlocked = unlockedIds.has(lesson.id);
+                      const isActive = activeLesson?.id === lesson.id;
                       return (
                         <button key={lesson.id}
                           onClick={() => unlocked && setActiveLesson(lesson)}
                           disabled={!unlocked}
-                          style={{ width: "100%", textAlign: "left" as const, padding: "0.5rem 0.75rem 0.5rem 1.5rem", background: isActive ? "rgba(212,175,55,0.12)" : "transparent", border: isActive ? "1px solid rgba(212,175,55,0.3)" : "1px solid transparent", borderRadius: 6, cursor: unlocked ? "pointer" : "default", marginBottom: "2px", display: "flex", alignItems: "center", gap: "0.5rem", opacity: unlocked ? 1 : 0.4 }}>
+                          style={{ width: "100%", textAlign: "left" as const, padding: "0.5rem 0.75rem 0.5rem 1.5rem", background: isActive ? "rgba(212,175,55,0.15)" : "transparent", border: isActive ? "1px solid rgba(212,175,55,0.4)" : "1px solid transparent", borderRadius: 6, cursor: unlocked ? "pointer" : "default", marginBottom: "2px", display: "flex", alignItems: "center", gap: "0.5rem", opacity: unlocked ? 1 : 0.4 }}>
                           <span style={{ fontSize: "0.7rem", flexShrink: 0 }}>{done ? "✅" : unlocked ? "▶" : "🔒"}</span>
                           <div style={{ minWidth: 0 }}>
-                            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.7rem", color: isActive ? "#D4AF37" : "#FFFFFF", fontWeight: isActive ? 600 : 400, lineHeight: 1.3, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{lesson.title}</p>
-                            {lesson.duration_minutes && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.58rem", color: "rgba(230,230,230,0.35)", margin: 0 }}>{lesson.duration_minutes} min</p>}
+                            <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.7rem", color: isActive ? "#B8941F" : "#0A2342", fontWeight: isActive ? 700 : 400, lineHeight: 1.3, margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" as const }}>{lesson.title}</p>
+                            {lesson.duration_minutes && <p style={{ fontFamily: "'Inter', sans-serif", fontSize: "0.58rem", color: "rgba(10,35,66,0.4)", margin: 0 }}>{lesson.duration_minutes} min</p>}
                           </div>
                         </button>
                       );
@@ -262,9 +242,9 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
         </div>
 
         {/* ── RIGHT PANEL ── */}
-        <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem" }}>
+        <div style={{ flex: 1, overflowY: "auto", padding: "1.5rem", background: "#FAFAF8" }}>
           {!activeLesson ? (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "rgba(255,255,255,0.3)", fontFamily: "'Inter', sans-serif", fontSize: "0.85rem" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "rgba(10,35,66,0.3)", fontFamily: "'Inter', sans-serif", fontSize: "0.85rem" }}>
               Select a lesson to begin
             </div>
           ) : (
@@ -275,11 +255,11 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
                 <p style={{ fontFamily: "'Montserrat', sans-serif", color: "#D4AF37", fontSize: "0.6rem", letterSpacing: "0.12em", textTransform: "uppercase" as const, marginBottom: "0.3rem" }}>
                   {modules.find(m => m.id === activeLesson.module_id)?.title ?? ""}
                 </p>
-                <h2 style={{ fontFamily: "'Playfair Display', serif", color: "#FFFFFF", fontSize: "1.4rem", fontWeight: 700, lineHeight: 1.3 }}>{activeLesson.title}</h2>
+                <h2 style={{ fontFamily: "'Playfair Display', serif", color: "#0A2342", fontSize: "1.4rem", fontWeight: 700, lineHeight: 1.3 }}>{activeLesson.title}</h2>
               </div>
 
-              {/* Video Player */}
-              <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, borderRadius: 10, overflow: "hidden", background: "#071A2E", border: "1px solid rgba(212,175,55,0.2)", marginBottom: "1.25rem" }}>
+              {/* Video Player — keeps dark background */}
+              <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, borderRadius: 10, overflow: "hidden", background: "#0A2342", border: "1px solid rgba(10,35,66,0.15)", marginBottom: "1.25rem" }}>
                 {activeLesson.bunny_video_id && BUNNY_LIBRARY_ID ? (
                   <iframe
                     src={`https://iframe.mediadelivery.net/embed/${BUNNY_LIBRARY_ID}/${activeLesson.bunny_video_id}?autoplay=false&loop=false&muted=false&preload=true&responsive=true`}
@@ -297,18 +277,18 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
 
               {/* Lesson description */}
               {activeLesson.description && (
-                <div style={{ marginBottom: "1.25rem", padding: "1rem 1.25rem", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: 8 }}>
-                  <p style={{ fontFamily: "'Inter', sans-serif", color: "rgba(230,230,230,0.75)", fontSize: "0.82rem", lineHeight: 1.7, margin: 0 }}>{activeLesson.description}</p>
+                <div style={{ marginBottom: "1.25rem", padding: "1rem 1.25rem", background: "#FFFFFF", border: "1px solid rgba(10,35,66,0.08)", borderRadius: 8 }}>
+                  <p style={{ fontFamily: "'Inter', sans-serif", color: "rgba(10,35,66,0.7)", fontSize: "0.82rem", lineHeight: 1.7, margin: 0 }}>{activeLesson.description}</p>
                 </div>
               )}
 
               {/* Agent Insight */}
               {activeLesson.agent_insight && (
-                <div style={{ marginBottom: "1.25rem", padding: "1rem 1.25rem", background: "rgba(194,24,91,0.05)", border: "1px solid rgba(194,24,91,0.25)", borderRadius: 8, display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
+                <div style={{ marginBottom: "1.25rem", padding: "1rem 1.25rem", background: "rgba(194,24,91,0.04)", border: "1px solid rgba(194,24,91,0.2)", borderRadius: 8, display: "flex", gap: "0.75rem", alignItems: "flex-start" }}>
                   <span style={{ fontSize: "1.2rem", flexShrink: 0 }}>✦</span>
                   <div>
                     {activeLesson.agent_name && <p style={{ fontFamily: "'Montserrat', sans-serif", color: "#C2185B", fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, marginBottom: "0.3rem" }}>{activeLesson.agent_name} · Insight</p>}
-                    <p style={{ fontFamily: "'Inter', sans-serif", color: "rgba(230,230,230,0.7)", fontSize: "0.78rem", lineHeight: 1.6, margin: 0 }}>{activeLesson.agent_insight}</p>
+                    <p style={{ fontFamily: "'Inter', sans-serif", color: "rgba(10,35,66,0.65)", fontSize: "0.78rem", lineHeight: 1.6, margin: 0 }}>{activeLesson.agent_insight}</p>
                   </div>
                 </div>
               )}
@@ -316,14 +296,14 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
               {/* Resources */}
               {activeLesson.resources && activeLesson.resources.length > 0 && (
                 <div style={{ marginBottom: "1.5rem" }}>
-                  <p style={{ fontFamily: "'Montserrat', sans-serif", color: "#D4AF37", fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, marginBottom: "0.5rem" }}>Resources</p>
+                  <p style={{ fontFamily: "'Montserrat', sans-serif", color: "#0A2342", fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase" as const, marginBottom: "0.5rem" }}>Resources</p>
                   <div style={{ display: "flex", flexDirection: "column" as const, gap: "0.4rem" }}>
                     {activeLesson.resources.map((r, i) => (
                       <a key={i} href={r.url} target="_blank" rel="noopener noreferrer"
-                        style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.6rem 0.875rem", background: "rgba(212,175,55,0.05)", border: "1px solid rgba(212,175,55,0.2)", borderRadius: 6, textDecoration: "none" }}>
+                        style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.6rem 0.875rem", background: "rgba(212,175,55,0.06)", border: "1px solid rgba(212,175,55,0.25)", borderRadius: 6, textDecoration: "none" }}>
                         <span style={{ fontSize: "0.8rem" }}>📄</span>
-                        <span style={{ fontFamily: "'Montserrat', sans-serif", color: "#D4AF37", fontSize: "0.72rem", fontWeight: 600 }}>{r.title}</span>
-                        <span style={{ marginLeft: "auto", fontFamily: "'Montserrat', sans-serif", color: "rgba(212,175,55,0.5)", fontSize: "0.6rem" }}>Download ↓</span>
+                        <span style={{ fontFamily: "'Montserrat', sans-serif", color: "#0A2342", fontSize: "0.72rem", fontWeight: 600 }}>{r.title}</span>
+                        <span style={{ marginLeft: "auto", fontFamily: "'Montserrat', sans-serif", color: "#B8941F", fontSize: "0.6rem", fontWeight: 700 }}>Download ↓</span>
                       </a>
                     ))}
                   </div>
@@ -331,11 +311,11 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
               )}
 
               {/* Navigation buttons */}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", paddingTop: "1rem", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "1rem", paddingTop: "1rem", borderTop: "1px solid rgba(10,35,66,0.1)" }}>
                 <button
                   onClick={() => { const idx = lessons.findIndex(l => l.id === activeLesson.id); if (idx > 0) setActiveLesson(lessons[idx - 1]); }}
                   disabled={lessons.findIndex(l => l.id === activeLesson.id) === 0}
-                  style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.72rem", fontWeight: 700, padding: "0.6rem 1.25rem", borderRadius: 6, border: "1px solid rgba(255,255,255,0.15)", background: "transparent", color: "rgba(255,255,255,0.5)", cursor: "pointer", opacity: lessons.findIndex(l => l.id === activeLesson.id) === 0 ? 0.3 : 1 }}>
+                  style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.72rem", fontWeight: 700, padding: "0.6rem 1.25rem", borderRadius: 6, border: "1px solid rgba(10,35,66,0.2)", background: "#FFFFFF", color: "rgba(10,35,66,0.5)", cursor: "pointer", opacity: lessons.findIndex(l => l.id === activeLesson.id) === 0 ? 0.3 : 1 }}>
                   ← Previous
                 </button>
 
@@ -352,7 +332,7 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
                 <button
                   onClick={() => { const idx = lessons.findIndex(l => l.id === activeLesson.id); if (idx < lessons.length - 1 && unlockedIds.has(lessons[idx + 1].id)) setActiveLesson(lessons[idx + 1]); }}
                   disabled={(() => { const idx = lessons.findIndex(l => l.id === activeLesson.id); return idx >= lessons.length - 1 || !unlockedIds.has(lessons[idx + 1]?.id); })()}
-                  style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.72rem", fontWeight: 700, padding: "0.6rem 1.25rem", borderRadius: 6, border: "1px solid rgba(212,175,55,0.4)", background: "transparent", color: "#D4AF37", cursor: "pointer", opacity: (() => { const idx = lessons.findIndex(l => l.id === activeLesson.id); return idx >= lessons.length - 1 || !unlockedIds.has(lessons[idx + 1]?.id) ? 0.3 : 1; })() }}>
+                  style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.72rem", fontWeight: 700, padding: "0.6rem 1.25rem", borderRadius: 6, border: "1px solid rgba(212,175,55,0.4)", background: "#FFFFFF", color: "#B8941F", cursor: "pointer", opacity: (() => { const idx = lessons.findIndex(l => l.id === activeLesson.id); return idx >= lessons.length - 1 || !unlockedIds.has(lessons[idx + 1]?.id) ? 0.3 : 1; })() }}>
                   Next →
                 </button>
               </div>
@@ -362,7 +342,7 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
         </div>
       </div>
 
-      <footer style={{ textAlign: "center" as const, padding: "0.75rem", color: "rgba(255,255,255,0.15)", fontFamily: "'Montserrat', sans-serif", fontSize: "0.58rem", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
+      <footer style={{ textAlign: "center" as const, padding: "0.75rem", color: "rgba(10,35,66,0.35)", fontFamily: "'Montserrat', sans-serif", fontSize: "0.58rem", borderTop: "1px solid rgba(10,35,66,0.08)", background: "#FFFFFF" }}>
         © 2026 DRU AI Consulting · From Confusion to Confident with AI™ · All Rights Reserved
       </footer>
     </div>
