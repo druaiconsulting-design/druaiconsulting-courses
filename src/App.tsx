@@ -25,7 +25,7 @@ function Router() {
   }
 
   // Admin course management
-  if (path === "/admin/courses" || path === "/admin/courses/") {
+  if (path === "/admin" || path === "/admin/") {
     setTitle("Course Management · DRU AI Consulting");
     if (!isLoggedIn) return <CourseLogin />;
     if (!isAdmin) { window.location.replace("/courses"); return null; }
@@ -42,7 +42,7 @@ function Router() {
   // Login page
   if (path === "/login" || path === "/login/") {
     setTitle("Sign In · DRU AI Consulting Courses");
-    if (isLoggedIn) { window.location.replace(isAdmin ? "/admin/courses" : "/courses"); return null; }
+    if (isLoggedIn) { window.location.replace(isAdmin ? "/admin" : "/courses"); return null; }
     return <CourseLogin />;
   }
 
@@ -50,13 +50,13 @@ function Router() {
   if (path === "/courses" || path === "/courses/" || path === "/" || path === "") {
     setTitle("From Confusion to Confident with AI™ · DRU AI Consulting");
     if (!isLoggedIn) return <CourseLogin />;
-    if (isAdmin) { window.location.replace("/admin/courses"); return null; }
+    if (isAdmin) { window.location.replace("/admin"); return null; }
     return <CourseDashboard />;
   }
 
   // Fallback
   setTitle("From Confusion to Confident with AI™");
-  if (isLoggedIn) { window.location.replace(isAdmin ? "/admin/courses" : "/courses"); return null; }
+  if (isLoggedIn) { window.location.replace(isAdmin ? "/admin" : "/courses"); return null; }
   return <CourseLogin />;
 }
 
