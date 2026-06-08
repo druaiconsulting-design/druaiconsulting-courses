@@ -47,7 +47,7 @@ function ProgressRing({ percent }: { percent: number }) {
 }
 
 export default function CourseDashboard({ adminPreview = false }: { adminPreview?: boolean }) {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, session, logout, isAdmin } = useAuth();
   const [enrollment, setEnrollment]     = useState<Enrollment | null | "loading">("loading");
   const [modules, setModules]           = useState<Module[]>([]);
   const [lessons, setLessons]           = useState<Lesson[]>([]);
@@ -55,6 +55,10 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
   const [activeLesson, setActiveLesson] = useState<Lesson | null>(null);
   const [completing, setCompleting]     = useState(false);
   const [railOpen, setRailOpen]         = useState(true);
+
+  // Bunny signed URL — refreshed when activeLesson changes
+  const [signedVideoUrl, setSignedVideoUrl]     = useState<string | null>(null);
+  const [videoTokenLoading, setVideoTokenLoading] = useState(false);
 
   // Fetch enrollment — admin always has full access
   useEffect(() => {
@@ -89,6 +93,26 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
     supabase.from("course_progress").select("lesson_id, completed").eq("user_id", user.id)
       .then(({ data }) => setProgress((data as Progress[]) || []));
   }, [user?.id]);
+
+  // Fetch signed Bunny URL whenever active lesson changes
+  useEffect(() => {
+    if (!activeLesson?.bunny_video_id || !session?.access_token) {
+      setSignedVideoUrl(null);
+      return;
+    }
+
+    setVideoTokenLoading(true);
+    setSignedVideoUrl(null);
+
+    fetch(`/api/bunny-token?videoId=${activeLesson.bunny_video_id}`, {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    })
+      .then(r => r.ok ? r.json() : Promise.reject(r.status))
+      .then(({ url }) => setSignedVideoUrl(url))
+      .catch(err => console.error("[CourseDashboard] bunny token error:", err))
+      .finally(() => setVideoTokenLoading(false));
+
+  }, [activeLesson?.id, session?.access_token]);
 
   const completedIds    = useMemo(() => new Set(progress.filter(p => p.completed).map(p => p.lesson_id)), [progress]);
   const totalLessons    = lessons.length;
@@ -258,11 +282,16 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
                 <h2 style={{ fontFamily: "'Playfair Display', serif", color: "#0A2342", fontSize: "1.4rem", fontWeight: 700, lineHeight: 1.3 }}>{activeLesson.title}</h2>
               </div>
 
-              {/* Video Player — keeps dark background */}
+              {/* Video Player — token auth via api/bunny-token */}
               <div style={{ position: "relative", paddingBottom: "56.25%", height: 0, borderRadius: 10, overflow: "hidden", background: "#0A2342", border: "1px solid rgba(10,35,66,0.15)", marginBottom: "1.25rem" }}>
-                {activeLesson.bunny_video_id && BUNNY_LIBRARY_ID ? (
+                {videoTokenLoading ? (
+                  <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <div style={{ width: 32, height: 32, border: "2px solid rgba(212,175,55,0.2)", borderTopColor: "#D4AF37", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                  </div>
+                ) : activeLesson.bunny_video_id && signedVideoUrl ? (
                   <iframe
-                    src={`https://iframe.mediadelivery.net/embed/${BUNNY_LIBRARY_ID}/${activeLesson.bunny_video_id}?autoplay=false&loop=false&muted=false&preload=true&responsive=true`}
+                    key={activeLesson.id}
+                    src={signedVideoUrl}
                     style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", border: "none" }}
                     allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
                     allowFullScreen
