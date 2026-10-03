@@ -80,7 +80,7 @@ export default function AdminCourses() {
       {/* Nav */}
       <nav style={{ background: "#163D6E", borderBottom: "1px solid rgba(212,175,55,0.2)", padding: "0 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64, flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663512997684/PPrwKSVlySJjkhTX.png" alt="DRU CLEAR™" style={{ height: 52 }} />
+          <span style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.35rem", fontWeight: 700, color: "#D4AF37", letterSpacing: "0.02em" }}>DRU AI Consulting</span>
           <span style={{ fontFamily: "'Montserrat', sans-serif", color: "#D4AF37", fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>Course Management</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
