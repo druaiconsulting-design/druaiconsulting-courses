@@ -15,11 +15,7 @@ function Router() {
     setTitle("From Confusion to Confident with AI™");
     return (
       <div style={{ minHeight: "100dvh", background: "#0A2342", display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <img
-          src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663512997684/PPrwKSVlySJjkhTX.png"
-          alt="DRU AI Consulting"
-          style={{ height: 56, width: "auto", opacity: 0.9 }}
-        />
+        <span style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.35rem", fontWeight: 700, color: "#D4AF37", letterSpacing: "0.02em", opacity: 0.9 }}>DRU AI Consulting</span>
       </div>
     );
   }
