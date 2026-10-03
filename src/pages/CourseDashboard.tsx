@@ -155,7 +155,7 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
   if (enrollment === null) {
     return (
       <div style={{ minHeight: "100dvh", background: "#FAFAF8", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "2rem 1.5rem" }}>
-        <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663512997684/PPrwKSVlySJjkhTX.png" alt="DRU AI Consulting" style={{ height: 90, marginBottom: "2rem" }} />
+        <img src="/new-dru-clear-navy-logo.png" alt="DRU AI Consulting" style={{ height: 90, marginBottom: "2rem" }} />
         <div style={{ maxWidth: 480, textAlign: "center" }}>
           <p style={{ fontFamily: "'Montserrat', sans-serif", color: "#D4AF37", fontSize: "0.65rem", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "0.75rem" }}>Access Required</p>
           <h1 style={{ fontFamily: "'Cinzel', serif", color: "#0A2342", fontSize: "1.4rem", fontWeight: 700, lineHeight: 1.4, marginBottom: "0.75rem" }}>From Confusion to Confident<br />with AI™</h1>
@@ -190,7 +190,7 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
       {/* Top NavBar — stays blue */}
       <nav style={{ background: "#163D6E", borderBottom: "1px solid rgba(212,175,55,0.2)", padding: "0 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64, flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663512997684/PPrwKSVlySJjkhTX.png" alt="DRU AI Consulting" style={{ height: 52, width: "auto" }} />
+          <span style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.35rem", fontWeight: 700, color: "#D4AF37", letterSpacing: "0.02em" }}>DRU AI Consulting</span>
           <span style={{ fontFamily: "'Montserrat', sans-serif", color: "rgba(255,255,255,0.5)", fontSize: "0.72rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>From Confusion to Confident with AI™</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
