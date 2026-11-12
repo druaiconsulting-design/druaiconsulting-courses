@@ -67,7 +67,7 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
     supabase.from("course_enrollments")
       .select("tier")
       .eq("user_id", user.id)
-      .eq("course_id", "confusion_to_confident")
+      .eq("course_id", "confusion_to_confidentce")
       .eq("payment_status", "active")
       .single()
       .then(({ data }) => setEnrollment(data ? { tier: data.tier } : null));
@@ -76,7 +76,7 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
   // Fetch course content
   useEffect(() => {
     supabase.from("course_modules")
-      .select("*").eq("course_id", "confusion_to_confident").eq("is_active", true).order("module_number")
+      .select("*").eq("course_id", "confusion_to_confidentce").eq("is_active", true).order("module_number")
       .then(({ data }) => setModules((data as Module[]) || []));
     supabase.from("course_lessons")
       .select("*").eq("is_active", true).order("lesson_number")
