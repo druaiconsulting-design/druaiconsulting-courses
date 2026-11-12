@@ -104,7 +104,7 @@ export default function AdminCourses() {
       <main style={{ flex: 1, padding: "2rem 1.5rem", maxWidth: 1000, margin: "0 auto", width: "100%" }}>
         <div style={{ marginBottom: "1.75rem" }}>
           <p style={{ fontFamily: "'Montserrat', sans-serif", color: "#C2185B", fontSize: "0.7rem", letterSpacing: "0.12em", textTransform: "uppercase" as const, marginBottom: "0.4rem" }}>Admin · Course Management</p>
-          <h1 style={{ fontFamily: "'Playfair Display', serif", color: "#FFFFFF", fontSize: "1.75rem", fontWeight: 700 }}>From Confusion to Confident with AI™</h1>
+          <h1 style={{ fontFamily: "'Playfair Display', serif", color: "#FFFFFF", fontSize: "1.75rem", fontWeight: 700 }}>From Confusion to Confidence with AI™</h1>
         </div>
 
         {/* Stats row */}
@@ -245,7 +245,7 @@ export default function AdminCourses() {
         )}
 
         <div style={{ marginTop: "2rem", textAlign: "center" as const, padding: "0.75rem", background: "rgba(212,175,55,0.05)", border: "1px solid rgba(212,175,55,0.2)", borderRadius: 8 }}>
-          <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.6rem", color: "rgba(212,175,55,0.7)", margin: 0 }}>DRU AI Consulting · From Confusion to Confident with AI™ · Admin Console © 2026</p>
+          <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "0.6rem", color: "rgba(212,175,55,0.7)", margin: 0 }}>DRU AI Consulting · From Confusion to Confidence with AI™ · Admin Console © 2026</p>
         </div>
       </main>
     </div>

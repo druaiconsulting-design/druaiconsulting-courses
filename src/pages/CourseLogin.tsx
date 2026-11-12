@@ -35,7 +35,7 @@ export default function CourseLogin({ adminMode = false }: { adminMode?: boolean
 
       {/* Hero image — carries the branding + course messaging */}
       <div style={{ width: "100%", maxWidth: 340, marginBottom: "2rem", borderRadius: 14, overflow: "hidden", boxShadow: "0 8px 32px rgba(10,35,66,0.12)" }}>
-        <img src="/confidence-social-light.png" alt="From Confusion to Confident with AI — DRU CLEAR" style={{ width: "100%", height: "auto", display: "block" }} />
+        <img src="/confidence-social-light.png" alt="From Confusion to Confidence with AI — DRU CLEAR" style={{ width: "100%", height: "auto", display: "block" }} />
       </div>
 
       <div style={{ width: "100%", maxWidth: 440 }}>
@@ -113,7 +113,7 @@ export default function CourseLogin({ adminMode = false }: { adminMode?: boolean
       </div>
 
       <footer style={{ marginTop: "2.5rem", color: "rgba(10,35,66,0.3)", fontFamily: "'Montserrat', sans-serif", fontSize: "0.58rem", letterSpacing: "0.04em", textAlign: "center" }}>
-        &copy; 2026 DRU AI Consulting · From Confusion to Confident with AI™ · All Rights Reserved
+        &copy; 2026 DRU AI Consulting · From Confusion to Confidence with AI™ · All Rights Reserved
       </footer>
     </div>
   );

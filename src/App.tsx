@@ -12,7 +12,7 @@ function Router() {
   const path = window.location.pathname;
 
   if (loading) {
-    setTitle("From Confusion to Confident with AI™");
+    setTitle("From Confusion to Confidence with AI™");
     return (
       <div style={{ minHeight: "100dvh", background: "#0A2342", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <span style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.35rem", fontWeight: 700, color: "#D4AF37", letterSpacing: "0.02em", opacity: 0.9 }}>DRU AI Consulting</span>
@@ -37,13 +37,13 @@ function Router() {
 
   // Course dashboard — admin can view without redirect (same as Client View in main app)
   if (path === "/courses" || path === "/courses/" || path === "/" || path === "") {
-    setTitle("From Confusion to Confident with AI™ · DRU AI Consulting");
+    setTitle("From Confusion to Confidence with AI™ · DRU AI Consulting");
     if (!isLoggedIn) return <CourseLogin />;
     return <CourseDashboard />;
   }
 
   // Fallback
-  setTitle("From Confusion to Confident with AI™");
+  setTitle("From Confusion to Confidence with AI™");
   if (isLoggedIn) { window.location.replace(isAdmin ? "/admin" : "/courses"); return null; }
   return <CourseLogin />;
 }

@@ -1,4 +1,4 @@
-// From Confusion to Confident with AI™ — Student Dashboard
+// From Confusion to Confidence with AI™ — Student Dashboard
 // Option A: Left Rail + Right Panel with Bunny Stream video player
 // Theme: Warm white #FAFAF8 · Navy text · Gold accents · Blue nav bar
 
@@ -158,7 +158,7 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
         <img src="/new-dru-clear-navy-logo.png" alt="DRU AI Consulting" style={{ height: 90, marginBottom: "2rem" }} />
         <div style={{ maxWidth: 480, textAlign: "center" }}>
           <p style={{ fontFamily: "'Montserrat', sans-serif", color: "#D4AF37", fontSize: "0.65rem", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "0.75rem" }}>Access Required</p>
-          <h1 style={{ fontFamily: "'Cinzel', serif", color: "#0A2342", fontSize: "1.4rem", fontWeight: 700, lineHeight: 1.4, marginBottom: "0.75rem" }}>From Confusion to Confident<br />with AI™</h1>
+          <h1 style={{ fontFamily: "'Cinzel', serif", color: "#0A2342", fontSize: "1.4rem", fontWeight: 700, lineHeight: 1.4, marginBottom: "0.75rem" }}>From Confusion to Confidence<br />with AI™</h1>
           <p style={{ fontFamily: "'Inter', sans-serif", color: "rgba(10,35,66,0.55)", fontSize: "0.8rem", lineHeight: 1.7, marginBottom: "2rem" }}>
             You're signed in as <strong style={{ color: "#D4AF37" }}>{user?.email}</strong> but don't have an active enrollment. Choose your tier below to get started.
           </p>
@@ -191,7 +191,7 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
       <nav style={{ background: "#163D6E", borderBottom: "1px solid rgba(212,175,55,0.2)", padding: "0 1.5rem", display: "flex", alignItems: "center", justifyContent: "space-between", height: 64, flexShrink: 0 }}>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <span style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.35rem", fontWeight: 700, color: "#D4AF37", letterSpacing: "0.02em" }}>DRU AI Consulting</span>
-          <span style={{ fontFamily: "'Montserrat', sans-serif", color: "rgba(255,255,255,0.5)", fontSize: "0.72rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>From Confusion to Confident with AI™</span>
+          <span style={{ fontFamily: "'Montserrat', sans-serif", color: "rgba(255,255,255,0.5)", fontSize: "0.72rem", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase" as const }}>From Confusion to Confidence with AI™</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           {isAdmin && (
@@ -372,7 +372,7 @@ export default function CourseDashboard({ adminPreview = false }: { adminPreview
       </div>
 
       <footer style={{ textAlign: "center" as const, padding: "0.75rem", color: "rgba(10,35,66,0.35)", fontFamily: "'Montserrat', sans-serif", fontSize: "0.58rem", borderTop: "1px solid rgba(10,35,66,0.08)", background: "#FFFFFF" }}>
-        © 2026 DRU AI Consulting · From Confusion to Confident with AI™ · All Rights Reserved
+        © 2026 DRU AI Consulting · From Confusion to Confidence with AI™ · All Rights Reserved
       </footer>
     </div>
   );
